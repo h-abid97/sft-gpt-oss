@@ -1,0 +1,8 @@
+outputs/
+unsloth_compiled_cache/
+
+# System / editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

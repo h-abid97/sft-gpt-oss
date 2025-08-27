@@ -1,0 +1,26 @@
+# ==== Core numeric ====
+numpy>=1.24,<3.0
+
+# ==== PyTorch stack (GPU build recommended) ====
+# Install a CUDA build of torch/torchvision appropriate for your system before/with this file if needed.
+torch>=2.8.0
+torchvision
+
+# Triton compiler (used by PyTorch fused kernels)
+triton>=3.4.0
+# Extra Triton kernel package pinned:
+git+https://github.com/triton-lang/triton.git@05b2c186c1b6c9a08375389d5efe9cb4c401c075#subdirectory=python/triton_kernels
+
+# 8-bit optimizer kernels
+bitsandbytes>=0.43.1
+
+# ==== HF/TRL/PEFT stack ====
+transformers==4.55.4
+datasets>=2.19.0
+accelerate>=0.33.0
+peft>=0.11.1
+trl>=0.9.6
+
+# ==== Unsloth ====
+unsloth[base] @ git+https://github.com/unslothai/unsloth@main
+unsloth_zoo[base] @ git+https://github.com/unslothai/unsloth-zoo@main
