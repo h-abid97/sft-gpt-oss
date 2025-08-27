@@ -24,7 +24,7 @@ from trl import SFTConfig, SFTTrainer
 # ============================================================
 # 1) Load GPT-OSS base model in 4-bit precision
 # ============================================================
-print("\n=== 1) Loading GPT-OSS 20B in 4-bit ===")
+print("\n\n=== 1) Loading GPT-OSS 20B in 4-bit ===")
 # 4-bit loading drastically reduces memory requirements
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name="unsloth/gpt-oss-20b",
@@ -37,7 +37,7 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 # ============================================================
 # 2) Attach LoRA adapters for efficient fine-tuning
 # ============================================================
-print("\n=== 2) Adding LoRA Adapters ===")
+print("\n\n\n\n=== 2) Adding LoRA Adapters ===")
 # LoRA allows training only small "adapter" layers, saving time & GPU memory
 model = FastLanguageModel.get_peft_model(
     model,
@@ -74,7 +74,7 @@ model.config.use_cache = False    # Needed when using gradient checkpointing
 #       though this results in higher latency.
 # ------------------------------------------------------------------------------
 
-print("\n=== 3) Quick Pre-Training Inference ===")
+print("\n\n\n\n=== 3) Quick Pre-Training Inference ===")
 messages = [{"role": "user", "content": "Solve x^5 + 3x^4 - 10 = 3."}]
 inputs = tokenizer.apply_chat_template(
     messages,
@@ -98,7 +98,7 @@ _ = model.generate(**inputs, max_new_tokens=128, streamer=TextStreamer(tokenizer
 # and develop reasoning capabilities in these four distinct languages.
 # ------------------------------------------------------------------------------
 
-print("\n=== 4) Loading & Formatting Dataset ===")
+print("\n\n\n\n=== 4) Loading & Formatting Dataset ===")
 dataset = load_dataset("HuggingFaceH4/Multilingual-Thinking", split="train")
 dataset = standardize_sharegpt(dataset) # Standardize to ShareGPT-style format so GPT-OSS chat template works
 
@@ -120,7 +120,7 @@ print("Sample formatted text:\n", dataset[0]["text"], "...")
 # ============================================================
 # 5) Fine-tune with TRL's SFTTrainer
 # ============================================================
-print("\n=== 5) Starting LoRA Fine-Tuning ===")
+print("\n\n\n\n=== 5) Starting LoRA Fine-Tuning ===")
 # Data collator pads sequences & prepares labels for causal LM training
 data_collator = DataCollatorForSeq2Seq(
     tokenizer=tokenizer,
@@ -135,9 +135,10 @@ trainer = SFTTrainer(
     tokenizer=tokenizer,
     train_dataset=dataset,
     data_collator=data_collator,
+    packing=True,
     args=SFTConfig(
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=4,   # Effective batch = 16
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=4,   # Effective batch = 8
         warmup_steps=5,
         max_steps=60,                    # Short demo run (increase for real training)
         learning_rate=2e-4,
@@ -156,7 +157,7 @@ trainer.train()
 # ============================================================
 # 6) Test inference after training
 # ============================================================
-print("\n=== 6) Running Post-Training Inference ===")
+print("\n\n\n\n=== 6) Running Post-Training Inference ===")
 messages = [
     {"role": "system", "content": "reasoning language: French\n\nYou are a helpful assistant that can solve mathematical problems."},
     {"role": "user", "content": "Solve x^5 + 3x^4 - 10 = 3."}
